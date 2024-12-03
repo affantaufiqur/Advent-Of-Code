@@ -70,15 +70,52 @@ async function p2() {
   for (let i = 0; i < splitted.length; i++) {
     if (!splitted[i] || !splitted[i].length) continue;
 
-    let increasing = true;
-    let decreasing = true;
-    let inBoundary = true;
+    const checkSequence = (arr: number[]) => {
+      let increasing = true;
+      let decreasing = true;
+      let inBoundary = true;
 
-    let inner = 0;
+      for (let j = 0; j < arr.length - 1; j++) {
+        const curr = arr[j];
+        const next = arr[j + 1];
+        const distance = Math.abs(curr - next);
 
-    while (inner < splitted[i].length) {
-      const curr = +splitted[inner];
-      const next = +splitted[inner + 1];
+        if (distance > 3) {
+          inBoundary = false;
+          break;
+        }
+
+        if (curr > next) {
+          increasing = false;
+        } else if (curr === next) {
+          increasing = false;
+          decreasing = false;
+          break;
+        } else {
+          decreasing = false;
+        }
+      }
+
+      return inBoundary && (increasing || decreasing);
+    };
+
+    let array = splitted[i].map(Number);
+
+    if (checkSequence(array)) {
+      safe++;
+      splitted[i] = [];
+      continue;
+    }
+
+    let possiblyValid = false;
+    for (let j = 0; j < array.length; j++) {
+      const tempArray = [...array.slice(0, j), ...array.slice(j + 1)];
+      if (checkSequence(tempArray)) {
+        possiblyValid = true;
+        safe++;
+        splitted[i] = [];
+        break;
+      }
     }
   }
 
@@ -86,4 +123,4 @@ async function p2() {
 }
 
 // console.log(await p());
-console.log(await p2());
+// console.log(await p2());
